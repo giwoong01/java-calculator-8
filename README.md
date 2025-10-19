@@ -59,3 +59,64 @@
     - [x]  정상적으로 덧셈 성공 (add메소드)
     - [x]  입력값이 null 또는 빈 문자열일 경우 0 반환
     - [x]  숫자 하나만 입력할 경우 해당 숫자 반환
+
+## 프로젝트 구조
+
+```
+src
+├── main
+│   └── java/calculator
+│       ├── Application.java
+│       ├── controller
+|       |   └── CalculatorController.java  
+│       ├── domain
+|       |   ├── Calculator.java  
+|       |   ├── ExpressionParser.java  
+|       |   ├── Number.java  
+|       |   └── Numbers.java  
+│       └── view
+|           ├── InputView.java  
+|           └── OutputView.java  
+└── test
+    └── java/calculator
+        ├── ApplicationTest.java
+        └── domain
+            ├── CalculatorTest.java
+            ├── ExpressionParserTest.java
+            ├── NumberTest.java
+            └── NumbersTest.java 
+```
+
+## 고민한 점
+
+### 1.
+
+처음에 도메인인 Calculator에 너무 많은 행위가 부여된 로직을 구현하였습니다.
+
+숫자 검증(음수, 문자), 숫자 파싱, stream을 돌며 더해서 결과 도출하기 등
+
+계산기라는 Calculator에 너무 과도한 행위가 부여된 것 같아서 이를 나누기 위해 고민하였습니다.
+
+객체지향적으로 구현하기 위해 고민한 결과, 숫자를 검증하고 파싱하는 Number와 그 숫자들을 더해주는 일급 컬렉션 Numbers를 도메인으로 추가하게 되었습니다.
+
+이로써 각 도메인에 역할이 나뉘고, 행위가 적절하게 부여되며 테스트 코드를 적절하게 작성할 수 있게 되었습니다.
+
+즉, 단일책임원칙(SRP)를 만족하는 객체지향적인 코드를 작성할 수 있었습니다.
+
+### 2.
+
+도메인 ExpressionParser을 Stateless하게 구현하냐, Stateful하게 구현할지 고민이 많았습니다.
+
+처음에는 Stateful하게 구현하려 했습니다.
+
+클래스 내부에 상태로 저장한 후 getExpression()으로 호출해서 값을 가져오려 했습니다.
+
+하지만 Stateful 객체는 새로운 expression마다 새로 생성해야 했기 때문에 비효율 적이었습니다.
+
+그리고 ExpressionParser 클래스의 역할은 ‘문자열을 특정 규칙에 따라 분리하는 행위’를 제공하는 서비스 객체로 지정했습니다.
+
+즉, 데이터를 저장할 필요 없이 기능만 제공하는게 역할에 충실하다고 판단되었습니다.
+
+그래서 해당 도메인은 Stateless하게 구현을 진행하였습니다.
+
+이로써 재사용성이 늘어났고 안전하게 사용할 수 있게되었습니다.
